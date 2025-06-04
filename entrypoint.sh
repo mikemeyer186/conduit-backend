@@ -14,8 +14,6 @@ python manage.py makemigrations
 python manage.py migrate
 python create_superuser.py
 
-gunicorn conduit.wsgi:application --bind 0.0.0.0:8020
-
 echo "Postgresql migrations finished"
 
-python manage.py runserver
+gunicorn conduit.wsgi:application --bind 0.0.0.0:8020
