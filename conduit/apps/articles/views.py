@@ -11,10 +11,7 @@ from .renderers import ArticleJSONRenderer, CommentJSONRenderer
 from .serializers import ArticleSerializer, CommentSerializer, TagSerializer
 
 
-class ArticleViewSet(mixins.CreateModelMixin, 
-                     mixins.ListModelMixin,
-                     mixins.RetrieveModelMixin,
-                     viewsets.GenericViewSet):
+class ArticleViewSet(viewsets.ModelViewSet):
 
     lookup_field = 'slug'
     queryset = Article.objects.select_related('author', 'author__user')
@@ -104,6 +101,17 @@ class ArticleViewSet(mixins.CreateModelMixin,
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    def destroy(self, request, slug):
+        try:
+            article = self.queryset.get(slug=slug)
+        except Article.DoesNotExist:
+            raise NotFound('An article with this slug does not exist.')
+        
+        article.delete()
+
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
